@@ -8,3 +8,6 @@ services:
       - "8081:8080"
     volumes:
       - ./example:/home/feedme/webroot
+    environment:
+      - FEEDME_WEBROOT=/home/feedme/webroot
+      - FEEDME_BASE_URL=https://example.com
