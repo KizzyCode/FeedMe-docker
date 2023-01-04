@@ -4,7 +4,8 @@ FROM ghcr.io/kizzycode/buildbase-rust:alpine AS buildenv
 RUN mv /root/.cargo /root/.cargo-persistent
 RUN --mount=type=tmpfs,target=/root/.cargo \
     cp -a /root/.cargo-persistent/. /root/.cargo \
-    && cargo install --git https://github.com/KizzyCode/FeedMe-rust \
+    && cargo install --git https://github.com/KizzyCode/FeedMe-rust --bins feedme-ytdlp \
+    && cargo install --git https://github.com/KizzyCode/FeedMe-rust --bins feedme-feed \
     && cp /root/.cargo/bin/feedme-* /root/ \
     && cp -a /root/.cargo/. /root/.cargo-persistent
 RUN rm -rf /root/.cargo \
