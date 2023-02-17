@@ -13,7 +13,7 @@ RUN rm -rf /root/.cargo \
 
 
 # Build the real container
-FROM alpine:latest
+FROM alpine:edge
 
 RUN apk add --no-cache aria2 ffmpeg thttpd yt-dlp
 RUN adduser --system --disabled-password --shell=/bin/sh --home=/home/feedme --uid=1000 feedme
