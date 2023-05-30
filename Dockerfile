@@ -13,9 +13,10 @@ RUN rm -rf /root/.cargo \
 
 
 # Build the real container
-FROM alpine:edge
+FROM alpine:latest
 
-RUN apk add --no-cache aria2 ffmpeg thttpd yt-dlp
+RUN apk add --no-cache aria2 ffmpeg thttpd py3-pip
+RUN pip install yt-dlp
 RUN adduser --system --disabled-password --shell=/bin/sh --home=/home/feedme --uid=1000 feedme
 
 COPY --from=buildenv /root/feedme-* /usr/bin/
