@@ -22,4 +22,5 @@ COPY files/yt-dlp.conf /home/feedme/.config/yt-dlp/config
 RUN mkdir -p /home/feedme/.tmp.yt-dlp
 RUN mkdir -p /home/feedme/webroot
 
+WORKDIR /home/feedme/webroot
 CMD ["/usr/sbin/thttpd", "-D", "-C", "/etc/thttpd.conf"]
