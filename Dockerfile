@@ -13,7 +13,7 @@ RUN apk add --no-cache aria2 ffmpeg thttpd py3-pip
 RUN pip install yt-dlp
 RUN adduser --system --disabled-password --shell=/bin/sh --home=/home/feedme --uid=1000 feedme
 
-COPY --from=buildenv /root/feedme-* /usr/bin/
+COPY --from=buildenv /root/.cargo/bin/feedme-* /usr/bin/
 COPY files/thttpd.conf /etc/thttpd.conf
 
 # Configure feedme userdata
