@@ -16,12 +16,13 @@ COPY --from=buildenv /root/.cargo/bin/feedme-* /usr/bin/
 RUN addgroup --system feedme
 RUN adduser --system --disabled-password --shell=/bin/sh --home=/home/feedme --uid=1000 --ingroup=feedme feedme
 
+COPY ./files/nginx.conf /etc/nginx/nginx.conf
+RUN chown -R feedme /var/lib/nginx /run/nginx
+
 USER feedme
 COPY ./files/yt-dlp.conf /home/feedme/.config/yt-dlp/config
 RUN mkdir -p /home/feedme/.tmp.yt-dlp
 RUN mkdir -p /home/feedme/webroot
 
-USER root
-COPY ./files/nginx.conf /etc/nginx/nginx.conf
 WORKDIR /home/feedme/webroot
 CMD ["/usr/sbin/nginx", "-e", "/dev/stderr", "-c", "/etc/nginx/nginx.conf"]
