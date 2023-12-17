@@ -9,18 +9,19 @@ RUN cargo install --git https://github.com/KizzyCode/FeedMe-rust --bins feedme-f
 # Build the real container
 FROM alpine:latest
 
-RUN apk add --no-cache aria2 ffmpeg thttpd py3-pip
-RUN pip install yt-dlp
-RUN adduser --system --disabled-password --shell=/bin/sh --home=/home/feedme --uid=1000 feedme
-
+RUN apk add --no-cache aria2 ffmpeg nginx py3-pip
+RUN pip install --break-system-packages yt-dlp
 COPY --from=buildenv /root/.cargo/bin/feedme-* /usr/bin/
-COPY files/thttpd.conf /etc/thttpd.conf
 
-# Configure feedme userdata
+RUN addgroup --system feedme
+RUN adduser --system --disabled-password --shell=/bin/sh --home=/home/feedme --uid=1000 --ingroup=feedme feedme
+
 USER feedme
-COPY files/yt-dlp.conf /home/feedme/.config/yt-dlp/config
+COPY ./files/yt-dlp.conf /home/feedme/.config/yt-dlp/config
 RUN mkdir -p /home/feedme/.tmp.yt-dlp
 RUN mkdir -p /home/feedme/webroot
 
+USER root
+COPY ./files/nginx.conf /etc/nginx/nginx.conf
 WORKDIR /home/feedme/webroot
-CMD ["/usr/sbin/thttpd", "-D", "-C", "/etc/thttpd.conf"]
+CMD ["/usr/sbin/nginx", "-e", "/dev/stderr", "-c", "/etc/nginx/nginx.conf"]
