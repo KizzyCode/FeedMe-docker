@@ -9,7 +9,7 @@ RUN cargo install --git https://github.com/KizzyCode/FeedMe-rust --bins feedme-f
 # Build the real container
 FROM alpine:latest
 
-RUN apk add --no-cache aria2 ffmpeg nginx py3-pip
+RUN apk add --no-cache aria2 ffmpeg nano nginx py3-pip
 RUN pip install --break-system-packages yt-dlp
 COPY --from=buildenv /root/.cargo/bin/feedme-* /usr/bin/
 
