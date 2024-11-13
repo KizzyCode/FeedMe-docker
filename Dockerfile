@@ -2,6 +2,7 @@
 FROM alpine:latest AS buildenv
 
 RUN apk add --no-cache build-base cargo git
+RUN cargo install --git https://github.com/KizzyCode/FeedMe-rust --bins feedme-manual
 RUN cargo install --git https://github.com/KizzyCode/FeedMe-rust --bins feedme-ytdlp
 RUN cargo install --git https://github.com/KizzyCode/FeedMe-rust --bins feedme-feed
 
