@@ -1,29 +1,44 @@
 # Build the daemon
-FROM alpine:latest AS buildenv
+FROM debian:latest AS buildenv
 
-RUN apk add --no-cache build-base cargo git
-RUN cargo install --git https://github.com/KizzyCode/FeedMe-rust --bins feedme-manual
-RUN cargo install --git https://github.com/KizzyCode/FeedMe-rust --bins feedme-ytdlp
-RUN cargo install --git https://github.com/KizzyCode/FeedMe-rust --bins feedme-feed
+ENV APT_PACKAGES build-essential ca-certificates curl git
+ENV DEBIAN_FRONTEND noninteractive
+RUN apt-get update \
+    && apt-get upgrade --yes \
+    && apt-get install --yes --no-install-recommends ${APT_PACKAGES}
+
+RUN curl --tlsv1.3 --output rustup.sh https://sh.rustup.rs \
+    && sh rustup.sh -y
+RUN git clone https://github.com/KizzyCode/FeedMe-rust \
+    && /root/.cargo/bin/cargo install --path=FeedMe-rust/manual \
+    && /root/.cargo/bin/cargo install --path=FeedMe-rust/ytdlp \
+    && /root/.cargo/bin/cargo install --path=FeedMe-rust/feed
 
 
 # Build the real container
-FROM alpine:latest
+FROM debian:latest
 
-RUN apk add --no-cache aria2 ffmpeg nano nginx py3-pip
+ENV APT_PACKAGES aria2 ca-certificates ffmpeg nano nginx python3-pip
+ENV DEBIAN_FRONTEND noninteractive
+RUN apt-get update \
+    && apt-get upgrade --yes \
+    && apt-get install --yes --no-install-recommends ${APT_PACKAGES} \
+    && apt-get clean
+
 RUN pip install --break-system-packages yt-dlp
+
 COPY --from=buildenv /root/.cargo/bin/feedme-* /usr/bin/
+COPY ./files/nginx.conf /etc/nginx/nginx.conf
+COPY ./files/nginx.conf /etc/nginx/nginx.conf
 
 RUN addgroup --system feedme
 RUN adduser --system --disabled-password --shell=/bin/sh --home=/home/feedme --uid=1000 --ingroup=feedme feedme
-
-COPY ./files/nginx.conf /etc/nginx/nginx.conf
-RUN chown -R feedme /var/lib/nginx /run/nginx
+RUN touch /run/nginx.pid \
+    && chown -R feedme /var/lib/nginx /usr/share/nginx /run/nginx.pid
 
 USER feedme
 COPY ./files/yt-dlp.conf /home/feedme/.config/yt-dlp/config
-RUN mkdir -p /home/feedme/.tmp.yt-dlp
-RUN mkdir -p /home/feedme/webroot
+RUN mkdir -p /home/feedme/.tmp.yt-dlp /home/feedme/webroot
 
 WORKDIR /home/feedme/webroot
 CMD ["/usr/sbin/nginx", "-e", "/dev/stderr", "-c", "/etc/nginx/nginx.conf"]
