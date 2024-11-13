@@ -1,5 +1,5 @@
 # Build the daemon
-FROM debian:latest AS buildenv
+FROM debian:stable-slim AS buildenv
 
 ENV APT_PACKAGES build-essential ca-certificates curl git
 ENV DEBIAN_FRONTEND noninteractive
@@ -16,7 +16,7 @@ RUN git clone https://github.com/KizzyCode/FeedMe-rust \
 
 
 # Build the real container
-FROM debian:latest
+FROM debian:stable-slim
 
 ENV APT_PACKAGES aria2 ca-certificates ffmpeg nano nginx python3-pip
 ENV DEBIAN_FRONTEND noninteractive
@@ -26,6 +26,7 @@ RUN apt-get update \
     && apt-get clean
 
 RUN pip install --break-system-packages yt-dlp
+RUN ln -sf /bin/bash /bin/sh
 
 COPY --from=buildenv /root/.cargo/bin/feedme-* /usr/bin/
 COPY ./files/nginx.conf /etc/nginx/nginx.conf
