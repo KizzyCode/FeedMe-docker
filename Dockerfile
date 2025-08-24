@@ -7,12 +7,17 @@ RUN apt-get update \
     && apt-get upgrade --yes \
     && apt-get install --yes --no-install-recommends ${APT_PACKAGES}
 
+RUN useradd --system --uid=10000 rust
+USER rust
+WORKDIR /home/rust/
+
 RUN curl --tlsv1.3 --output rustup.sh https://sh.rustup.rs \
-    && sh rustup.sh -y
+    && sh rustup.sh -y --profile minimal
+COPY --chown=rust:rust ./ ws2812b.cgi/
 RUN git clone https://github.com/KizzyCode/FeedMe-rust \
-    && /root/.cargo/bin/cargo install --path=FeedMe-rust/manual \
-    && /root/.cargo/bin/cargo install --path=FeedMe-rust/ytdlp \
-    && /root/.cargo/bin/cargo install --path=FeedMe-rust/feed
+    && .cargo/bin/cargo install --path=FeedMe-rust/manual \
+    && .cargo/bin/cargo install --path=FeedMe-rust/ytdlp \
+    && .cargo/bin/cargo install --path=FeedMe-rust/feed
 
 
 # Build the real container
@@ -28,7 +33,7 @@ RUN apt-get update \
 RUN pip install --break-system-packages yt-dlp
 RUN ln -sf /bin/bash /bin/sh
 
-COPY --from=buildenv /root/.cargo/bin/feedme-* /usr/bin/
+COPY --from=buildenv --chown=root:root /home/rust/.cargo/bin/feedme-* /usr/bin/
 COPY ./files/nginx.conf /etc/nginx/nginx.conf
 COPY ./files/nginx.conf /etc/nginx/nginx.conf
 
