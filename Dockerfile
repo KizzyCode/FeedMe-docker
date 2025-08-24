@@ -33,12 +33,12 @@ COPY ./files/nginx.conf /etc/nginx/nginx.conf
 COPY ./files/nginx.conf /etc/nginx/nginx.conf
 
 RUN groupadd --system feedme
-RUN useradd --system --disabled-password --shell=/bin/sh --home=/home/feedme --uid=10000 --ingroup=feedme feedme
+RUN useradd --system --shell=/bin/sh --home=/home/feedme --uid=10000 --gid=feedme feedme
 RUN touch /run/nginx.pid \
     && chown -R feedme /var/lib/nginx /usr/share/nginx /run/nginx.pid
 
 USER feedme
-COPY ./files/yt-dlp.conf /home/feedme/.config/yt-dlp/config
+COPY --chown=feedme:feedme ./files/yt-dlp.conf /home/feedme/.config/yt-dlp/config
 RUN mkdir -p /home/feedme/.tmp.yt-dlp /home/feedme/webroot
 
 WORKDIR /home/feedme/webroot
