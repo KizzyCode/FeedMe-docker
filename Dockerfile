@@ -32,8 +32,8 @@ COPY --from=buildenv /root/.cargo/bin/feedme-* /usr/bin/
 COPY ./files/nginx.conf /etc/nginx/nginx.conf
 COPY ./files/nginx.conf /etc/nginx/nginx.conf
 
-RUN addgroup --system feedme
-RUN adduser --system --disabled-password --shell=/bin/sh --home=/home/feedme --uid=10000 --ingroup=feedme feedme
+RUN groupadd --system feedme
+RUN useradd --system --disabled-password --shell=/bin/sh --home=/home/feedme --uid=10000 --ingroup=feedme feedme
 RUN touch /run/nginx.pid \
     && chown -R feedme /var/lib/nginx /usr/share/nginx /run/nginx.pid
 
