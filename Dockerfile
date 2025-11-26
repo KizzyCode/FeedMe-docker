@@ -23,14 +23,14 @@ RUN git clone https://github.com/KizzyCode/FeedMe-rust \
 # Build the real container
 FROM debian:stable-slim
 
-ENV APT_PACKAGES aria2 ca-certificates ffmpeg nano nginx python3-pip
+ENV APT_PACKAGES aria2 ca-certificates ffmpeg nano nginx nodejs python3-pip
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update \
     && apt-get upgrade --yes \
     && apt-get install --yes --no-install-recommends ${APT_PACKAGES} \
     && apt-get clean
 
-RUN pip install --break-system-packages yt-dlp
+RUN pip install --break-system-packages "yt-dlp[default]"
 RUN ln -sf /bin/bash /bin/sh
 
 COPY --from=buildenv --chown=root:root /home/rust/.cargo/bin/feedme-* /usr/bin/
