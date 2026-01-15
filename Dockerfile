@@ -42,8 +42,8 @@ RUN touch /run/nginx.pid \
     && chown -R feedme /var/lib/nginx /usr/share/nginx /run/nginx.pid
 
 USER feedme
-RUN mkdir -p /home/feedme/.yt-dlp/tmp /home/feedme/webroot
 COPY --chown=feedme:feedme ./files/yt-dlp.conf /home/feedme/.yt-dlp/config
+RUN mkdir -p /home/feedme/.yt-dlp/tmp /home/feedme/webroot
 
 WORKDIR /home/feedme/webroot
 CMD ["/usr/sbin/nginx", "-e", "/dev/stderr", "-c", "/etc/nginx/nginx.conf"]
