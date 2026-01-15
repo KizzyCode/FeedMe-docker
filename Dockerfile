@@ -35,7 +35,6 @@ RUN ln -sf /bin/bash /bin/sh
 
 COPY --from=buildenv --chown=root:root /home/rust/.cargo/bin/feedme-* /usr/bin/
 COPY ./files/nginx.conf /etc/nginx/nginx.conf
-COPY ./files/nginx.conf /etc/nginx/nginx.conf
 
 RUN groupadd --system feedme
 RUN useradd --system --shell=/bin/sh --home=/home/feedme --uid=10000 --gid=feedme feedme
@@ -43,8 +42,8 @@ RUN touch /run/nginx.pid \
     && chown -R feedme /var/lib/nginx /usr/share/nginx /run/nginx.pid
 
 USER feedme
-COPY --chown=feedme:feedme ./files/yt-dlp.conf /home/feedme/.config/yt-dlp/config
-RUN mkdir -p /home/feedme/.tmp.yt-dlp /home/feedme/webroot
+RUN mkdir -p /home/feedme/.yt-dlp/tmp /home/feedme/webroot
+COPY --chown=feedme:feedme ./files/yt-dlp.conf /home/feedme/.yt-dlp/config
 
 WORKDIR /home/feedme/webroot
 CMD ["/usr/sbin/nginx", "-e", "/dev/stderr", "-c", "/etc/nginx/nginx.conf"]
