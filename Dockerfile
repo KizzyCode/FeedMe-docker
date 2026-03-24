@@ -13,7 +13,6 @@ WORKDIR /home/rust/
 
 RUN curl --tlsv1.3 --output rustup.sh https://sh.rustup.rs \
     && sh rustup.sh -y --profile minimal
-COPY --chown=rust:rust ./ ws2812b.cgi/
 RUN git clone https://github.com/KizzyCode/FeedMe-rust \
     && .cargo/bin/cargo install --path=FeedMe-rust/manual \
     && .cargo/bin/cargo install --path=FeedMe-rust/ytdlp \
