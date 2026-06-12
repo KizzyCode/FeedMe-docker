@@ -1,5 +1,5 @@
 # Build the daemon
-FROM debian:stable-slim AS buildenv
+FROM debian:testing-slim AS buildenv
 
 ENV APT_PACKAGES build-essential ca-certificates curl git
 ENV DEBIAN_FRONTEND noninteractive
@@ -20,7 +20,7 @@ RUN git clone https://github.com/KizzyCode/FeedMe-rust \
 
 
 # Build the real container
-FROM debian:stable-slim
+FROM debian:testing-slim
 
 ENV APT_PACKAGES aria2 ca-certificates ffmpeg nano nginx nodejs python3
 ENV DEBIAN_FRONTEND noninteractive
