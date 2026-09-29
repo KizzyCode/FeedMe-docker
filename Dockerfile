@@ -34,6 +34,7 @@ ADD --chown=root:root --chmod=u=rwx,g=rx,o=rx \
 RUN /usr/bin/yt-dlp --update-to nightly
 
 COPY --from=buildenv --chown=root:root /home/rust/.cargo/bin/feedme-* /usr/bin/
+COPY ./files/convert-to-h265.py /usr/bin/convert-to-h265
 COPY ./files/nginx.conf /etc/nginx/nginx.conf
 
 RUN groupadd --system feedme
